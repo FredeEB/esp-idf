@@ -30,6 +30,7 @@ ESP_STATIC_ASSERT(SNTP_OPMODE_LISTENONLY == ESP_SNTP_OPMODE_LISTENONLY, "SNTP mo
 static volatile sntp_sync_mode_t sntp_sync_mode = SNTP_SYNC_MODE_IMMED;
 static volatile sntp_sync_status_t sntp_sync_status = SNTP_SYNC_STATUS_RESET;
 static sntp_sync_time_cb_t time_sync_notification_cb = NULL;
+static void* time_sync_notification_cb_user_data = NULL;
 static uint32_t s_sync_interval = CONFIG_LWIP_SNTP_UPDATE_DELAY;
 
 inline void sntp_set_sync_status(sntp_sync_status_t sync_status)
@@ -59,7 +60,7 @@ void __attribute__((weak)) sntp_sync_time(struct timeval *tv)
         }
     }
     if (time_sync_notification_cb) {
-        time_sync_notification_cb(tv);
+        time_sync_notification_cb(tv, time_sync_notification_cb_user_data);
     }
 }
 
@@ -74,9 +75,10 @@ sntp_sync_mode_t sntp_get_sync_mode(void)
 }
 
 // set a callback function for time synchronization notification
-void sntp_set_time_sync_notification_cb(sntp_sync_time_cb_t callback)
+void sntp_set_time_sync_notification_cb(sntp_sync_time_cb_t callback, void* user_data)
 {
     time_sync_notification_cb = callback;
+    time_sync_notification_cb_user_data = user_data;
 }
 
 sntp_sync_status_t sntp_get_sync_status(void)

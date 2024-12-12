@@ -78,8 +78,9 @@ typedef enum {
  * @brief SNTP callback function for notifying about time sync event
  *
  * @param tv Time received from SNTP server.
+ * @param user_data Pointer to data to be passed to callback function
  */
-typedef void (*sntp_sync_time_cb_t) (struct timeval *tv);
+typedef void (*sntp_sync_time_cb_t) (struct timeval *tv, void* user_data);
 
 /**
  * @brief This function updates the system time.
